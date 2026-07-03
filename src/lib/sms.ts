@@ -1,3 +1,10 @@
+export function isBulkSmsConfigured(): boolean {
+  return Boolean(
+    process.env.BULKSMS_API_KEY?.trim() &&
+      process.env.BULKSMS_SENDER_ID?.trim()
+  );
+}
+
 export function normalizeBdPhone(phone: string): string | null {
   const digits = phone.replace(/\D/g, "");
   if (/^01[3-9]\d{8}$/.test(digits)) return `88${digits}`;

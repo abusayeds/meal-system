@@ -9,7 +9,9 @@
     "seed:june-2026": "node --require ./dns-preload.cjs ./scripts/seed-june-2026.cjs",
     "delete:june-2026": "node --require ./dns-preload.cjs ./scripts/delete-june-2026.cjs",
     "seed:june-2026-meals": "node --require ./dns-preload.cjs ./scripts/seed-june-2026-meals.cjs",
-    "seed:june-2026-bazar": "node --require ./dns-preload.cjs ./scripts/seed-june-2026-bazar.cjs"
+    "seed:june-2026-bazar": "node --require ./dns-preload.cjs ./scripts/seed-june-2026-bazar.cjs",
+    "update-admin-email": "node --require ./dns-preload.cjs ./scripts/update-admin-email.cjs",
+    "drop:sms-logs": "node --require ./dns-preload.cjs ./scripts/drop-sms-reminder-logs.cjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

@@ -3,16 +3,13 @@
 import { useEffect, useState } from "react";
 import PageContainer, { PageHeader } from "@/components/PageContainer";
 
-interface ReminderLog {
-  id: string;
+interface ReminderDetail {
   userName: string;
   phone: string;
-  targetDate: string;
   missingMeals: string[];
   message: string;
-  status: string;
+  status: "sent" | "failed" | "skipped";
   providerResponse?: string;
-  createdAt: string;
 }
 
 function ToggleSwitch({
@@ -40,18 +37,20 @@ function ToggleSwitch({
 
 export default function AdminRemindersPage() {
   const [enabled, setEnabled] = useState(true);
-  const [liveMode, setLiveMode] = useState(false);
-  const [logs, setLogs] = useState<ReminderLog[]>([]);
+  const [bulksmsConfigured, setBulksmsConfigured] = useState(false);
   const [running, setRunning] = useState(false);
   const [message, setMessage] = useState("");
+  const [lastRun, setLastRun] = useState<{
+    targetDate: string;
+    details: ReminderDetail[];
+  } | null>(null);
 
   async function load() {
     const res = await fetch("/api/admin/meal-reminder");
     const data = await res.json();
     if (res.ok) {
       setEnabled(data.mealReminderEnabled);
-      setLiveMode(data.smsLiveMode);
-      setLogs(data.logs);
+      setBulksmsConfigured(data.bulksmsConfigured);
     }
   }
 
@@ -59,32 +58,32 @@ export default function AdminRemindersPage() {
     load();
   }, []);
 
-  async function saveSettings(next: {
-    mealReminderEnabled?: boolean;
-    smsLiveMode?: boolean;
-  }) {
+  async function saveEnabled(next: boolean) {
     const res = await fetch("/api/admin/meal-reminder", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(next),
+      body: JSON.stringify({ mealReminderEnabled: next }),
     });
     if (res.ok) {
       const data = await res.json();
       setEnabled(data.mealReminderEnabled);
-      setLiveMode(data.smsLiveMode);
     }
   }
 
   async function runNow() {
     setRunning(true);
     setMessage("");
+    setLastRun(null);
     const res = await fetch("/api/admin/meal-reminder", { method: "POST" });
     const data = await res.json();
     if (res.ok) {
       setMessage(
-        `Done — checked ${data.checked}, reminders ${data.reminders} (${data.mode} mode: sent ${data.sent}, test ${data.test}, failed ${data.failed}, skipped ${data.skipped})`
+        `Done — checked ${data.checked}, reminders ${data.reminders}, sent ${data.sent}, failed ${data.failed}, skipped ${data.skipped}`
       );
-      load();
+      setLastRun({
+        targetDate: data.targetDate,
+        details: data.details ?? [],
+      });
     } else {
       setMessage(data.error || "Failed");
     }
@@ -102,40 +101,39 @@ export default function AdminRemindersPage() {
         <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <p className="font-semibold text-slate-900">Reminder ON/OFF</p>
-              <p className="text-xs text-slate-500">Cron + manual run</p>
+              <p className="font-semibold text-slate-900">Auto Reminder ON/OFF</p>
+              <p className="text-xs text-slate-500">
+                OFF থাকলে রাত ১০:৩০ auto SMS যাবে না। Manual &quot;Reminder
+                Now&quot; সবসময় কাজ করবে।
+              </p>
             </div>
             <ToggleSwitch
               on={enabled}
               onToggle={() => {
                 const next = !enabled;
                 setEnabled(next);
-                saveSettings({ mealReminderEnabled: next });
+                saveEnabled(next);
               }}
-              label="Toggle reminders"
+              label="Toggle auto reminders"
             />
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-4">
-            <div>
-              <p className="font-semibold text-slate-900">
-                {liveMode ? "Live SMS" : "Test mode"}
+          <div className="mt-4 border-t border-slate-100 pt-4">
+            <span
+              className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold uppercase ${
+                bulksmsConfigured
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-amber-100 text-amber-800"
+              }`}
+            >
+              {bulksmsConfigured ? "BulkSMS ready" : "BulkSMS not set"}
+            </span>
+            {!bulksmsConfigured && (
+              <p className="mt-2 text-xs text-amber-800">
+                Vercel বা .env.local-এ BULKSMS_API_KEY ও BULKSMS_SENDER_ID set
+                করুন।
               </p>
-              <p className="text-xs text-slate-500">
-                {liveMode
-                  ? "Real SMS via BulkSMS BD"
-                  : "Log only — no SMS sent (no balance needed)"}
-              </p>
-            </div>
-            <ToggleSwitch
-              on={liveMode}
-              onToggle={() => {
-                const next = !liveMode;
-                setLiveMode(next);
-                saveSettings({ smsLiveMode: next });
-              }}
-              label="Toggle live SMS"
-            />
+            )}
           </div>
         </div>
 
@@ -148,55 +146,73 @@ export default function AdminRemindersPage() {
         <button
           type="button"
           onClick={runNow}
-          disabled={running}
-          className="btn-primary min-h-[48px] w-full bg-violet-600 hover:bg-violet-700 sm:w-auto"
+          disabled={running || !bulksmsConfigured}
+          className="btn-primary min-h-[48px] w-full bg-violet-600 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
-          {running ? "Running..." : "Run Reminder Now (Test)"}
+          {running ? "Sending..." : "Reminder Now"}
         </button>
 
         {message && (
-          <p className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800 ring-1 ring-emerald-100">
+          <p
+            className={`rounded-xl px-4 py-3 text-sm ring-1 ${
+              message.startsWith("Done")
+                ? "bg-emerald-50 text-emerald-800 ring-emerald-100"
+                : "bg-red-50 text-red-800 ring-red-100"
+            }`}
+          >
             {message}
           </p>
         )}
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
-        <div className="border-b border-slate-200 px-4 py-4 sm:px-6">
-          <h2 className="font-semibold text-slate-900">Recent Logs</h2>
-        </div>
-        <div className="divide-y divide-slate-100">
-          {logs.length === 0 ? (
-            <p className="p-6 text-center text-sm text-slate-400">No logs yet</p>
-          ) : (
-            logs.map((log) => (
-              <div key={log.id} className="p-4 sm:px-6">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-semibold text-slate-900">{log.userName}</span>
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
-                      log.status === "sent"
-                        ? "bg-emerald-100 text-emerald-700"
-                        : log.status === "test"
-                          ? "bg-blue-100 text-blue-700"
-                          : log.status === "failed"
+      {lastRun && (
+        <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+          <div className="border-b border-slate-200 px-4 py-4 sm:px-6">
+            <h2 className="font-semibold text-slate-900">Last Run Result</h2>
+            <p className="mt-0.5 text-xs text-slate-500">
+              Target date: {lastRun.targetDate} · reload করলে চলে যাবে
+            </p>
+          </div>
+          <div className="divide-y divide-slate-100">
+            {lastRun.details.length === 0 ? (
+              <p className="p-6 text-center text-sm text-slate-400">
+                কাউকে reminder লাগেনি — সবাই meal update করেছে
+              </p>
+            ) : (
+              lastRun.details.map((item, i) => (
+                <div key={`${item.userName}-${i}`} className="p-4 sm:px-6">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-semibold text-slate-900">
+                      {item.userName}
+                    </span>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
+                        item.status === "sent"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : item.status === "failed"
                             ? "bg-red-100 text-red-700"
                             : "bg-slate-100 text-slate-600"
-                    }`}
-                  >
-                    {log.status}
-                  </span>
-                  <span className="text-xs text-slate-400">{log.targetDate}</span>
+                      }`}
+                    >
+                      {item.status}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Missing: {item.missingMeals.join(", ")} ·{" "}
+                    {item.phone || "no phone"}
+                  </p>
+                  <p className="mt-2 text-sm text-slate-700">{item.message}</p>
+                  {item.status === "failed" && item.providerResponse && (
+                    <p className="mt-1 text-xs text-red-600">
+                      {item.providerResponse}
+                    </p>
+                  )}
                 </div>
-                <p className="mt-1 text-xs text-slate-500">
-                  Missing: {log.missingMeals.join(", ")} · {log.phone || "no phone"}
-                </p>
-                <p className="mt-2 text-sm text-slate-700">{log.message}</p>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </PageContainer>
   );
 }

@@ -96,7 +96,7 @@ export async function ensureDefaultAdmin() {
   const count = await User.countDocuments();
   if (count > 0) return;
 
-  const email = process.env.ADMIN_EMAIL || "admin@mealsystem.com";
+  const email = process.env.ADMIN_EMAIL || "ganabhaban@gmail.com";
   const password = process.env.ADMIN_PASSWORD || "admin123";
   const name = process.env.ADMIN_NAME || "Admin";
 

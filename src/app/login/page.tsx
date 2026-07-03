@@ -79,7 +79,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                placeholder="admin@mealsystem.com"
+                placeholder="ganabhaban@gmail.com"
                 required
               />
             </div>
@@ -108,7 +108,7 @@ export default function LoginPage() {
           </form>
 
           <p className="mt-6 text-center text-xs text-slate-400">
-            Default admin: admin@mealsystem.com / admin123
+            Admin login: ganabhaban@gmail.com
           </p>
         </div>
       </div>

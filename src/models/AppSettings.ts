@@ -12,7 +12,7 @@ const AppSettingsSchema = new Schema<IAppSettings>(
   {
     lockAllMemberEdits: { type: Boolean, default: false },
     mealReminderEnabled: { type: Boolean, default: true },
-    smsLiveMode: { type: Boolean, default: false },
+    smsLiveMode: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
