@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { connectDB } from "@/lib/db";
 import { requireAdmin, requireSession } from "@/lib/auth";
+import { mergeRentFields, splitRentFields } from "@/lib/rent-fields";
 import RentConfig from "@/models/RentConfig";
 import { jsonError, jsonSuccess } from "@/lib/utils";
 
@@ -25,17 +26,18 @@ export async function PUT(request: NextRequest) {
     await requireAdmin();
     await connectDB();
 
-    const { monthId, fields } = await request.json();
-    if (!monthId || !Array.isArray(fields)) {
-      return jsonError("monthId and fields array are required");
-    }
+    const { monthId, fields, fixedFields, otherFields } = await request.json();
+    if (!monthId) return jsonError("monthId is required");
 
-    const sanitized = fields.map(
-      (f: { name: string; amount: number; _id?: string }) => ({
-        name: String(f.name).trim(),
-        amount: Math.max(0, Number(f.amount) || 0),
-      })
-    );
+    let sanitized;
+    if (Array.isArray(fixedFields) && Array.isArray(otherFields)) {
+      sanitized = mergeRentFields(fixedFields, otherFields);
+    } else if (Array.isArray(fields)) {
+      const { fixedFields: fixed, otherFields: others } = splitRentFields(fields);
+      sanitized = mergeRentFields(fixed, others);
+    } else {
+      return jsonError("fields array is required");
+    }
 
     const config = await RentConfig.findOneAndUpdate(
       { monthId },

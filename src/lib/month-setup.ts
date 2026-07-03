@@ -1,16 +1,10 @@
 import Month from "@/models/Month";
-import RentConfig, { IRentField } from "@/models/RentConfig";
+import RentConfig from "@/models/RentConfig";
+import {
+  DEFAULT_RENT_FIELDS,
+  type RentField,
+} from "@/lib/rent-fields";
 import { formatMonthLabel } from "@/lib/utils";
-
-export const DEFAULT_RENT_FIELDS: IRentField[] = [
-  { name: "Monthly Rent", amount: 0 },
-  { name: "Electricity", amount: 0 },
-  { name: "Gas", amount: 0 },
-  { name: "Water", amount: 0 },
-  { name: "Internet", amount: 0 },
-  { name: "Khala", amount: 0 },
-  { name: "Dust", amount: 0 },
-];
 
 function isElectricityField(name: string) {
   return name.trim().toLowerCase() === "electricity";
@@ -29,7 +23,7 @@ export function getPreviousYearMonth(year: number, month: number) {
 async function getRentFieldsFromPreviousMonth(
   year: number,
   month: number
-): Promise<IRentField[]> {
+): Promise<RentField[]> {
   const { year: prevYear, month: prevMonth } = getPreviousYearMonth(year, month);
   const prevMonthDoc = await Month.findOne({ year: prevYear, month: prevMonth }).lean();
 
