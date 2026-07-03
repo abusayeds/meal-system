@@ -145,11 +145,11 @@ export default function Sidebar({
     <aside
       className={`flex w-full flex-col bg-white ${
         isSheet
-          ? "h-full max-h-full overflow-y-auto"
+          ? "h-full max-h-full min-h-0 overflow-hidden"
           : "h-full lg:w-64 lg:border-r lg:border-slate-200"
       }`}
     >
-      <div className={`border-b border-slate-200 ${isSheet ? "px-4 pb-4 pt-1" : "p-5"}`}>
+      <div className={`shrink-0 border-b border-slate-200 ${isSheet ? "px-4 pb-4 pt-1" : "p-5"}`}>
         <div className="flex items-center justify-between gap-2">
           {isSheet ? (
             <h2 className="text-base font-bold text-slate-900">{APP_NAME}</h2>
@@ -234,7 +234,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+      <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto p-3">
         <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
           Main
         </p>
@@ -254,7 +254,7 @@ export default function Sidebar({
         )}
       </nav>
 
-      <div className="border-t border-slate-200 p-4">
+      <div className="shrink-0 border-t border-slate-200 p-4">
         <div className="mb-3 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-100">
           <p className="text-sm font-semibold text-slate-900">{user.name}</p>
           <p className="truncate text-xs text-slate-500">{user.email}</p>
