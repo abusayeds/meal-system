@@ -43,8 +43,9 @@ export default function MobileBottomNav({
         ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200/80 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_24px_rgba(15,23,42,0.08)] backdrop-blur-xl lg:hidden">
-      <div className="flex items-stretch px-1 pt-1">
+    <nav className="fixed inset-x-0 bottom-0 z-30 lg:hidden">
+      <div className="border-t border-slate-200/80 bg-white shadow-[0_-4px_24px_rgba(15,23,42,0.08)]">
+        <div className="flex items-stretch px-1 pt-1">
         {items.map((item) => {
           const active = pathname === item.href;
           const Icon = item.icon;
@@ -95,6 +96,12 @@ export default function MobileBottomNav({
           {menuOpen ? "Close" : "Menu"}
         </button>
       </div>
+      </div>
+      <div
+        aria-hidden
+        className="bg-white"
+        style={{ height: "env(safe-area-inset-bottom, 0px)" }}
+      />
     </nav>
   );
 }

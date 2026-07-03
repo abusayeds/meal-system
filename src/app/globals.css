@@ -12,6 +12,12 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html,
+body {
+  height: 100%;
+  background: #ffffff;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -22,6 +28,11 @@ body {
 }
 
 @media (display-mode: standalone) {
+  html,
+  body {
+    background: #ffffff;
+  }
+
   body {
     overscroll-behavior: none;
   }

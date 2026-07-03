@@ -56,7 +56,7 @@ export default function AppShell({
   }, [menuOpen]);
 
   return (
-    <div className="flex h-[100dvh] overflow-hidden">
+    <div className="fixed inset-0 flex overflow-hidden bg-slate-50">
       <div className="hidden lg:flex lg:shrink-0">
         <Sidebar user={user} />
       </div>

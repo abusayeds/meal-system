@@ -14,7 +14,7 @@ export default function MobileMonthBar({
   onMenuClick: () => void;
 }) {
   return (
-    <div className="sticky top-0 z-20 shrink-0 border-b border-slate-200/80 bg-white/95 pt-[env(safe-area-inset-top)] backdrop-blur-md lg:hidden">
+    <div className="sticky top-0 z-20 shrink-0 border-b border-slate-200/80 bg-white pt-[env(safe-area-inset-top)] lg:hidden">
       <button
         type="button"
         onClick={onMenuClick}
