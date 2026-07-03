@@ -143,10 +143,10 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`flex w-full flex-col bg-white ${
+      className={`w-full bg-white ${
         isSheet
-          ? "h-full max-h-full min-h-0 overflow-hidden"
-          : "h-full lg:w-64 lg:border-r lg:border-slate-200"
+          ? "grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden"
+          : "flex h-full flex-col lg:w-64 lg:border-r lg:border-slate-200"
       }`}
     >
       <div className={`shrink-0 border-b border-slate-200 ${isSheet ? "px-4 pb-4 pt-1" : "p-5"}`}>
@@ -234,7 +234,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto p-3">
+      <nav className="min-h-0 space-y-1 overflow-y-auto overscroll-contain p-3">
         <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
           Main
         </p>
@@ -254,35 +254,80 @@ export default function Sidebar({
         )}
       </nav>
 
-      <div className="shrink-0 border-t border-slate-200 p-4">
-        <div className="mb-3 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-100">
-          <p className="text-sm font-semibold text-slate-900">{user.name}</p>
-          <p className="truncate text-xs text-slate-500">{user.email}</p>
-          <span
-            className={`mt-1.5 inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
-              user.role === "admin"
-                ? "bg-violet-100 text-violet-700"
-                : "bg-emerald-100 text-emerald-700"
-            }`}
-          >
-            {user.role}
-          </span>
-        </div>
-        <button
-          type="button"
-          onClick={() => setPasswordOpen(true)}
-          className="mb-2 flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 active:scale-[0.98]"
-        >
-          <KeyRound className="h-4 w-4" />
-          Change Password
-        </button>
-        <button
-          onClick={handleLogout}
-          className="flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 active:scale-[0.98]"
-        >
-          <LogOut className="h-4 w-4" />
-          Logout
-        </button>
+      <div
+        className={`border-t border-slate-200 bg-white ${
+          isSheet ? "px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]" : "p-4"
+        }`}
+      >
+        {isSheet ? (
+          <>
+            <div className="mb-2 flex items-center justify-between gap-2 rounded-xl bg-slate-50 px-3 py-2 ring-1 ring-slate-100">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-slate-900">{user.name}</p>
+                <p className="truncate text-xs text-slate-500">{user.email}</p>
+              </div>
+              <span
+                className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                  user.role === "admin"
+                    ? "bg-violet-100 text-violet-700"
+                    : "bg-emerald-100 text-emerald-700"
+                }`}
+              >
+                {user.role}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setPasswordOpen(true)}
+                className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50 active:scale-[0.98]"
+              >
+                <KeyRound className="h-4 w-4 shrink-0" />
+                Password
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-2 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-100 active:scale-[0.98]"
+              >
+                <LogOut className="h-4 w-4 shrink-0" />
+                Logout
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="mb-3 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-100">
+              <p className="text-sm font-semibold text-slate-900">{user.name}</p>
+              <p className="truncate text-xs text-slate-500">{user.email}</p>
+              <span
+                className={`mt-1.5 inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                  user.role === "admin"
+                    ? "bg-violet-100 text-violet-700"
+                    : "bg-emerald-100 text-emerald-700"
+                }`}
+              >
+                {user.role}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setPasswordOpen(true)}
+              className="mb-2 flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 active:scale-[0.98]"
+            >
+              <KeyRound className="h-4 w-4" />
+              Change Password
+            </button>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 active:scale-[0.98]"
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </button>
+          </>
+        )}
       </div>
 
       <ChangePasswordModal

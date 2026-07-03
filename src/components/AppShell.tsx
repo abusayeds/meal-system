@@ -72,14 +72,14 @@ export default function AppShell({
             onClick={closeMenu}
           />
           <div
-            className={`fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col rounded-t-3xl bg-white shadow-[0_-8px_40px_rgba(15,23,42,0.15)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform lg:hidden ${
+            className={`fixed inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] z-50 flex h-[min(75dvh,calc(100dvh-4.5rem-env(safe-area-inset-bottom,0px)-3.5rem))] max-h-[min(75dvh,calc(100dvh-4.5rem-env(safe-area-inset-bottom,0px)-3.5rem))] flex-col overflow-hidden rounded-t-3xl bg-white shadow-[0_-8px_40px_rgba(15,23,42,0.15)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform lg:hidden ${
               drawerVisible ? "translate-y-0" : "translate-y-full"
             }`}
           >
             <div className="flex shrink-0 justify-center pt-3 pb-2">
               <div className="h-1 w-12 rounded-full bg-slate-200" />
             </div>
-            <div className="min-h-0 flex-1 overflow-hidden pb-[env(safe-area-inset-bottom)]">
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
               <Sidebar
                 user={user}
                 variant="sheet"
