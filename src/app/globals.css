@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
 }
 
 @theme inline {
@@ -12,15 +12,102 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input, select, textarea, button {
+  font-family: inherit;
+  font-size: 16px;
+}
+
+@media (min-width: 768px) {
+  input, select, textarea, button {
+    font-size: inherit;
+  }
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/* Reusable form & button utilities */
+.input-field {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(226 232 240);
+  background: white;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: rgb(16 185 129);
+  box-shadow: 0 0 0 3px rgb(16 185 129 / 0.12);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(226 232 240);
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(71 85 105);
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn-secondary:hover {
+  background: rgb(248 250 252);
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+.card-empty {
+  border-radius: 1rem;
+  background: white;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  border: 1px solid rgb(226 232 240);
+}
+
+.scroll-hint {
+  background: linear-gradient(to right, white, transparent);
+}
+
+* {
+  scroll-behavior: smooth;
 }
