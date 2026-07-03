@@ -23,7 +23,7 @@ import type { LucideIcon } from "lucide-react";
 import { useMonth } from "@/components/MonthProvider";
 import MonthSelector from "@/components/MonthSelector";
 import ChangePasswordModal from "@/components/ChangePasswordModal";
-import { APP_NAME, APP_SHORT } from "@/lib/brand";
+import { APP_NAME } from "@/lib/brand";
 
 interface User {
   id: string;
@@ -176,12 +176,13 @@ export default function Sidebar({
             <h2 className="text-base font-bold text-slate-900">{APP_NAME}</h2>
           ) : (
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-sm">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-sm">
                 <ChefHat className="h-5 w-5" strokeWidth={2.25} />
               </div>
-              <div>
+              <div className="min-w-0">
                 <h1 className="text-sm font-bold text-slate-900">{APP_NAME}</h1>
-                <p className="text-xs text-slate-500">{APP_SHORT}</p>
+                <p className="truncate text-xs text-slate-500">{user.email}</p>
+                <p className="truncate text-xs text-slate-600">{user.name}</p>
               </div>
             </div>
           )}
@@ -255,7 +256,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      <nav className="min-h-0 space-y-1 overflow-y-auto overscroll-contain p-3">
+      <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain p-3">
         <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
           Main
         </p>
@@ -273,16 +274,22 @@ export default function Sidebar({
             ))}
           </>
         )}
+
+        {!isSheet && (
+          <>
+            <NavAction
+              icon={KeyRound}
+              label="Change Password"
+              onClick={() => setPasswordOpen(true)}
+            />
+            <NavAction icon={LogOut} label="Logout" onClick={handleLogout} />
+          </>
+        )}
       </nav>
 
-      <div
-        className={`shrink-0 border-t border-slate-200 bg-white ${
-          isSheet ? "px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]" : "p-3"
-        }`}
-      >
-        {isSheet ? (
-          <>
-            <div className="mb-2 flex items-center justify-between gap-2 rounded-xl bg-slate-50 px-3 py-2 ring-1 ring-slate-100">
+      {isSheet && (
+        <div className="shrink-0 border-t border-slate-200 bg-white px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="mb-2 flex items-center justify-between gap-2 rounded-xl bg-slate-50 px-3 py-2 ring-1 ring-slate-100">
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-slate-900">{user.name}</p>
                 <p className="truncate text-xs text-slate-500">{user.email}</p>
@@ -315,23 +322,8 @@ export default function Sidebar({
                 Logout
               </button>
             </div>
-          </>
-        ) : (
-          <div className="space-y-1">
-            <div className="mb-2 px-3">
-              <p className="text-sm font-bold text-slate-900">{APP_NAME}</p>
-              <p className="truncate text-xs text-slate-500">{user.email}</p>
-              <p className="text-xs text-slate-600">{user.name}</p>
-            </div>
-            <NavAction
-              icon={KeyRound}
-              label="Change Password"
-              onClick={() => setPasswordOpen(true)}
-            />
-            <NavAction icon={LogOut} label="Logout" onClick={handleLogout} />
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <ChangePasswordModal
         open={passwordOpen}
