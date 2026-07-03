@@ -8,5 +8,15 @@
         "C5:8E:85:26:1A:DC:5C:CB:86:B3:2E:80:2B:9B:26:1B:60:84:A8:DE:3E:1E:F7:58:1F:93:58:66:4F:E7:0F:B4"
       ]
     }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.vercel.meal_system_inky.twa",
+      "sha256_cert_fingerprints": [
+        "D3:3A:84:57:49:47:5E:E9:72:90:55:07:B6:FE:84:D1:72:54:BF:B6:C7:EF:90:1C:D0:9C:44:45:6C:09:A3:6A"
+      ]
+    }
   }
 ]
