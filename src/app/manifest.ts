@@ -3,6 +3,7 @@ import { APP_NAME, APP_SHORT, APP_TAGLINE } from "@/lib/brand";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
+    id: "https://meal-system-inky.vercel.app/",
     name: APP_NAME,
     short_name: APP_SHORT,
     description: APP_TAGLINE,

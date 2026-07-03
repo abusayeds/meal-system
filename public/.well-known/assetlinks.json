@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "ganabhaban.meals",
+      "sha256_cert_fingerprints": [
+        "C5:8E:85:26:1A:DC:5C:CB:86:B3:2E:80:2B:9B:26:1B:60:84:A8:DE:3E:1E:F7:58:1F:93:58:66:4F:E7:0F:B4"
+      ]
+    }
+  }
+]

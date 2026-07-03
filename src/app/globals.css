@@ -21,6 +21,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@media (display-mode: standalone) {
+  body {
+    overscroll-behavior: none;
+  }
+}
+
 input, select, textarea, button {
   font-family: inherit;
   font-size: 16px;
