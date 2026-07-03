@@ -72,7 +72,7 @@ export default function AppShell({
             onClick={closeMenu}
           />
           <div
-            className={`fixed inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] z-50 flex h-[min(75dvh,calc(100dvh-4.5rem-env(safe-area-inset-bottom,0px)-3.5rem))] max-h-[min(75dvh,calc(100dvh-4.5rem-env(safe-area-inset-bottom,0px)-3.5rem))] flex-col overflow-hidden rounded-t-3xl bg-white shadow-[0_-8px_40px_rgba(15,23,42,0.15)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform lg:hidden ${
+            className={`fixed inset-x-0 bottom-0 z-50 flex h-[92dvh] max-h-[92dvh] flex-col overflow-hidden rounded-t-3xl bg-white shadow-[0_-8px_40px_rgba(15,23,42,0.15)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform lg:hidden ${
               drawerVisible ? "translate-y-0" : "translate-y-full"
             }`}
           >
@@ -104,11 +104,13 @@ export default function AppShell({
           {children}
         </main>
 
-        <MobileBottomNav
-          user={user}
-          menuOpen={menuOpen}
-          onMenuClick={toggleMenu}
-        />
+        {!menuOpen && (
+          <MobileBottomNav
+            user={user}
+            menuOpen={menuOpen}
+            onMenuClick={toggleMenu}
+          />
+        )}
       </div>
     </div>
   );
