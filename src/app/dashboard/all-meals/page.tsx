@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { UtensilsCrossed } from "lucide-react";
 import PageContainer, { PageHeader, MobileScrollTable } from "@/components/PageContainer";
 import { useMonth } from "@/components/MonthProvider";
 import { getMealSelectOptions, formatMeal } from "@/lib/format";
@@ -23,13 +24,24 @@ export default function AllMealsPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [calendar, setCalendar] = useState<DayRow[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState("");
+  const [mobileMemberId, setMobileMemberId] = useState("");
   const [saving, setSaving] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/auth/me")
       .then((r) => r.json())
-      .then((d) => setIsAdmin(d.user?.role === "admin"));
+      .then((d) => {
+        setIsAdmin(d.user?.role === "admin");
+        setCurrentUserId(d.user?.id ?? "");
+      });
   }, []);
+
+  useEffect(() => {
+    if (!currentUserId || members.length === 0) return;
+    const exists = members.some((m) => m.id === currentUserId);
+    setMobileMemberId(exists ? currentUserId : members[0].id);
+  }, [currentUserId, members, selectedMonthId]);
 
   useEffect(() => {
     if (!selectedMonthId) return;
@@ -99,6 +111,14 @@ export default function AllMealsPage() {
     );
   }
 
+  const mobileMember = members.find((m) => m.id === mobileMemberId);
+  const mobileMemberIdx = members.findIndex((m) => m.id === mobileMemberId);
+  const mobileTotal = mobileMemberId ? (totals[mobileMemberId] ?? 0) : 0;
+  const mobileColor =
+    mobileMember && mobileMemberIdx >= 0
+      ? getMemberColor(mobileMember.name, mobileMemberIdx)
+      : null;
+
   return (
     <PageContainer>
       <PageHeader
@@ -112,7 +132,7 @@ export default function AllMealsPage() {
         </div>
       )}
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-4 hidden flex-wrap gap-2 md:flex">
         {members.map((m, i) => {
           const c = getMemberColor(m.name, i);
           return (
@@ -126,88 +146,104 @@ export default function AllMealsPage() {
         })}
       </div>
 
-      {/* Mobile: day cards with all members */}
-      <div className="mt-4 space-y-3 md:hidden">
-        {calendar.map((day) => (
-          <div
-            key={day.date}
-            className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200"
-          >
-            <p className="font-bold text-slate-900">
-              {day.day}{" "}
-              <span className="font-normal text-slate-400">{day.weekday}</span>
-            </p>
-            <div className="mt-3 space-y-3">
-              {members.map((m, i) => {
-                const c = getMemberColor(m.name, i);
-                const meal = day.meals[m.id] ?? {
-                  breakfast: 0,
-                  lunch: 0,
-                  dinner: 0,
-                };
-                const savingKey = `${day.date}-${m.id}`;
-                const isSaving = saving === savingKey;
+      {/* Mobile: one member at a time */}
+      <div className="mt-4 md:hidden">
+        <label className="mb-1.5 block text-xs font-medium text-slate-500">
+          Select member
+        </label>
+        <select
+          value={mobileMemberId}
+          onChange={(e) => setMobileMemberId(e.target.value)}
+          className="input-field w-full"
+        >
+          {members.map((m) => (
+            <option key={m.id} value={m.id}>
+              {m.name}
+            </option>
+          ))}
+        </select>
 
-                return (
-                  <div
-                    key={m.id}
-                    className={`rounded-xl p-3 ${c.cell} ${isSaving ? "opacity-60" : ""}`}
-                  >
-                    <p className={`mb-2 text-xs font-bold ${c.cellText}`}>{m.name}</p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {(["breakfast", "lunch", "dinner"] as const).map((field) => (
-                        <div key={field}>
-                          <p className="mb-1 text-center text-[10px] font-semibold uppercase text-slate-400">
-                            {field === "breakfast" ? "B" : field === "lunch" ? "L" : "D"}
-                          </p>
-                          {isAdmin ? (
-                            <select
-                              value={meal[field]}
-                              onChange={(e) =>
-                                updateMeal(
-                                  day.date,
-                                  m.id,
-                                  field,
-                                  Number(e.target.value),
-                                  meal
-                                )
-                              }
-                              className="w-full min-h-[44px] rounded-lg border border-slate-200/80 bg-white/90 text-center text-sm font-medium focus:border-violet-500 focus:outline-none"
-                            >
-                              {getMealSelectOptions(meal[field]).map((v) => (
-                                <option key={v} value={v}>
-                                  {formatMeal(v)}
-                                </option>
-                              ))}
-                            </select>
-                          ) : (
-                            <p className="min-h-[44px] rounded-lg bg-white/60 py-3 text-center font-semibold">
-                              {formatMeal(meal[field])}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
+        {mobileMember && (
+          <div className="mt-3 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-4 py-4 text-white shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
+              <UtensilsCrossed className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-xs font-medium text-emerald-100">
+                {mobileMember.name} — Total Meals
+              </p>
+              <p className="text-xl font-bold">{formatMeal(mobileTotal)}</p>
             </div>
           </div>
-        ))}
+        )}
 
-        <div className="rounded-2xl bg-slate-800 p-4 text-white">
-          <p className="font-bold">TOTAL</p>
-          <div className="mt-2 space-y-1">
-            {members.map((m, i) => {
-              const c = getMemberColor(m.name, i);
-              return (
-                <div key={m.id} className="flex justify-between text-sm">
-                  <span className={c.totalText}>{m.name}</span>
-                  <span className="font-bold">{formatMeal(totals[m.id])}</span>
-                </div>
-              );
-            })}
-          </div>
+        <div className="mt-4 space-y-3">
+        {calendar.map((day) => {
+          if (!mobileMemberId) return null;
+          const meal = day.meals[mobileMemberId] ?? {
+            breakfast: 0,
+            lunch: 0,
+            dinner: 0,
+          };
+          const dayTotal = meal.breakfast + meal.lunch + meal.dinner;
+          const savingKey = `${day.date}-${mobileMemberId}`;
+          const isSaving = saving === savingKey;
+
+          return (
+            <div
+              key={day.date}
+              className={`rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200 ${isSaving ? "opacity-60" : ""}`}
+            >
+              <div className="flex items-center justify-between">
+                <p className="font-bold text-slate-900">
+                  {day.day}{" "}
+                  <span className="font-normal text-slate-400">{day.weekday}</span>
+                </p>
+                <span
+                  className={`rounded-full px-3 py-1 text-sm font-bold ${
+                    mobileColor ? mobileColor.badge : "bg-emerald-100 text-emerald-700"
+                  }`}
+                >
+                  {formatMeal(dayTotal)}
+                </span>
+              </div>
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                {(["breakfast", "lunch", "dinner"] as const).map((field) => (
+                  <div key={field}>
+                    <p className="mb-1 text-center text-[10px] font-semibold uppercase text-slate-400">
+                      {field === "breakfast" ? "B" : field === "lunch" ? "L" : "D"}
+                    </p>
+                    {isAdmin ? (
+                      <select
+                        value={meal[field]}
+                        onChange={(e) =>
+                          updateMeal(
+                            day.date,
+                            mobileMemberId,
+                            field,
+                            Number(e.target.value),
+                            meal
+                          )
+                        }
+                        className="w-full min-h-[44px] rounded-lg border border-slate-200/80 bg-slate-50 text-center text-sm font-medium focus:border-violet-500 focus:outline-none"
+                      >
+                        {getMealSelectOptions(meal[field]).map((v) => (
+                          <option key={v} value={v}>
+                            {formatMeal(v)}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <p className="min-h-[44px] rounded-lg bg-slate-50 py-3 text-center font-semibold text-slate-700">
+                        {formatMeal(meal[field])}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
         </div>
       </div>
 
