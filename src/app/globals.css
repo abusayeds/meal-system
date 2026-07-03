@@ -30,12 +30,22 @@ body {
 @media (display-mode: standalone) {
   html,
   body {
-    background: #ffffff;
+    background: #ffffff !important;
   }
 
   body {
     overscroll-behavior: none;
   }
+
+  .mobile-bottom-nav {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
+    background: #ffffff;
+  }
+}
+
+.mobile-bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: #ffffff;
 }
 
 input, select, textarea, button {

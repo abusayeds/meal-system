@@ -92,7 +92,7 @@ export default function AppShell({
         </>
       )}
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
         <MobileMonthBar
           label={selectedMonth?.label}
           isCurrent={selectedMonth?.isCurrent}
@@ -100,7 +100,7 @@ export default function AppShell({
           onMenuClick={toggleMenu}
         />
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50 pb-[calc(4.75rem+env(safe-area-inset-bottom))] lg:pb-0">
+        <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden bg-slate-50 lg:pb-0">
           {children}
         </main>
 
