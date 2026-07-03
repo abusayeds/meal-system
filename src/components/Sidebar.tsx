@@ -139,6 +139,27 @@ export default function Sidebar({
     );
   }
 
+  function NavAction({
+    label,
+    icon: Icon,
+    onClick,
+  }: {
+    label: string;
+    icon: LucideIcon;
+    onClick: () => void;
+  }) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="flex min-h-[46px] w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition-all hover:bg-slate-100 active:scale-[0.98]"
+      >
+        <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={2} />
+        {label}
+      </button>
+    );
+  }
+
   const isSheet = variant === "sheet";
 
   return (
@@ -255,8 +276,8 @@ export default function Sidebar({
       </nav>
 
       <div
-        className={`border-t border-slate-200 bg-white ${
-          isSheet ? "px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]" : "p-4"
+        className={`shrink-0 border-t border-slate-200 bg-white ${
+          isSheet ? "px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]" : "p-3"
         }`}
       >
         {isSheet ? (
@@ -296,37 +317,19 @@ export default function Sidebar({
             </div>
           </>
         ) : (
-          <>
-            <div className="mb-3 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-100">
-              <p className="text-sm font-semibold text-slate-900">{user.name}</p>
+          <div className="space-y-1">
+            <div className="mb-2 px-3">
+              <p className="text-sm font-bold text-slate-900">{APP_NAME}</p>
               <p className="truncate text-xs text-slate-500">{user.email}</p>
-              <span
-                className={`mt-1.5 inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
-                  user.role === "admin"
-                    ? "bg-violet-100 text-violet-700"
-                    : "bg-emerald-100 text-emerald-700"
-                }`}
-              >
-                {user.role}
-              </span>
+              <p className="text-xs text-slate-600">{user.name}</p>
             </div>
-            <button
-              type="button"
+            <NavAction
+              icon={KeyRound}
+              label="Change Password"
               onClick={() => setPasswordOpen(true)}
-              className="mb-2 flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 active:scale-[0.98]"
-            >
-              <KeyRound className="h-4 w-4" />
-              Change Password
-            </button>
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 active:scale-[0.98]"
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </button>
-          </>
+            />
+            <NavAction icon={LogOut} label="Logout" onClick={handleLogout} />
+          </div>
         )}
       </div>
 
