@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PageContainer, { PageHeader, MobileScrollTable } from "@/components/PageContainer";
+import RentBreakdownCard from "@/components/RentBreakdownCard";
 import { useMonth } from "@/components/MonthProvider";
 import { formatCurrency, formatMealRate } from "@/lib/format";
 import { getMemberColor } from "@/lib/member-colors";
@@ -77,8 +78,8 @@ export default function SettlementPage() {
 
       {summary && (
         <>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+          <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200 sm:p-6">
               <h2 className="font-semibold text-slate-900">Meal Rate Calculation</h2>
               <div className="mt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -101,27 +102,12 @@ export default function SettlementPage() {
               </p>
             </div>
 
-            <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-              <h2 className="font-semibold text-slate-900">Rent &amp; Utilities</h2>
-              <div className="mt-4 space-y-2 text-sm">
-                {rentFields.map((f) => (
-                  <div key={f.name} className="flex justify-between">
-                    <span className="text-slate-500">{f.name}</span>
-                    <span className="font-medium">{formatCurrency(f.amount)}</span>
-                  </div>
-                ))}
-                <div className="flex justify-between border-t border-slate-200 pt-2">
-                  <span className="font-semibold text-violet-700">Total</span>
-                  <span className="font-bold text-violet-700">
-                    {formatCurrency(summary.totalRent)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Per Person ({summary.memberCount} members)</span>
-                  <span className="font-medium">{formatCurrency(summary.rentShare)}</span>
-                </div>
-              </div>
-            </div>
+            <RentBreakdownCard
+              rentFields={rentFields}
+              totalRent={summary.totalRent}
+              rentShare={summary.rentShare}
+              memberCount={summary.memberCount}
+            />
           </div>
 
           {/* Mobile settlement cards */}

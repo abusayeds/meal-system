@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Pencil, Trash2, X, Calendar, Banknote, FileText } from "lucide-react";
 import PageContainer, { PageHeader } from "@/components/PageContainer";
 import ActionButton from "@/components/ui/ActionButton";
+import BazarDescriptionInput from "@/components/ui/BazarDescriptionInput";
 import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
 import { useMonth } from "@/components/MonthProvider";
 import { formatCurrency } from "@/lib/format";
@@ -227,11 +228,9 @@ export default function MyBazarPage() {
                   <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-600">
                     <FileText className="h-3.5 w-3.5" /> Description
                   </label>
-                  <input
-                    type="text"
+                  <BazarDescriptionInput
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="input-field"
+                    onChange={setDescription}
                     placeholder="murgi, sobji, dim"
                   />
                 </div>

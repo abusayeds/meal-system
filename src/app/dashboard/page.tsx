@@ -72,7 +72,7 @@ export default function DashboardPage() {
     <PageContainer>
       <PageHeader
         title="Overview"
-        subtitle={`Monthly summary for ${selectedMonth?.label} 4 `}
+        subtitle={`Monthly summary for ${selectedMonth?.label}`}
       />
 
       {fetching ? (

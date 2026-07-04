@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import PageContainer, { PageHeader, MobileScrollTable } from "@/components/PageContainer";
 import ActionButton from "@/components/ui/ActionButton";
+import BazarDescriptionInput from "@/components/ui/BazarDescriptionInput";
 import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
 import { useMonth } from "@/components/MonthProvider";
 import { formatCurrency } from "@/lib/format";
@@ -335,12 +336,10 @@ export default function AllBazarPage() {
                 <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-600">
                   <FileText className="h-3.5 w-3.5" /> Description
                 </label>
-                <input
-                  type="text"
+                <BazarDescriptionInput
                   value={formDescription}
-                  onChange={(e) => setFormDescription(e.target.value)}
+                  onChange={setFormDescription}
                   placeholder="murgi, sobji"
-                  className="input-field"
                 />
               </div>
             </div>
