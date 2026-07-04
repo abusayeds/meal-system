@@ -304,63 +304,71 @@ export default function AllMealsPage() {
             <tbody>
               {calendar.map((day) => {
                 const isActive = isDateActive(day.date, activeDate);
+                const activeRowCellClass = isActive
+                  ? "border-y-2 border-emerald-500 bg-emerald-50"
+                  : "border-y-2 border-transparent bg-white group-hover:border-emerald-400 group-hover:bg-emerald-50/40";
 
                 return (
-                <tr
-                  key={day.date}
-                  onClick={() => setActiveDate(day.date)}
-                  className={`cursor-pointer border-b border-slate-100 transition-all duration-200 ${dateRowRingClass(isActive)}`}
-                >
-                  <td className="sticky left-0 bg-white px-3 py-1.5 font-medium text-slate-700">
-                    {day.day}{" "}
-                    <span className="text-slate-400">{day.weekday}</span>
-                  </td>
-                  {members.flatMap((m, i) => {
-                    const c = getMemberColor(m.name, i);
-                    const meal = day.meals[m.id] ?? {
-                      breakfast: 0,
-                      lunch: 0,
-                      dinner: 0,
-                    };
-                    const cellClass = `px-1 py-1.5 text-center font-medium ${c.cell} ${c.cellText}`;
-                    const savingKey = `${day.date}-${m.id}`;
-                    const isSaving = saving === savingKey;
+                  <tr
+                    key={day.date}
+                    onClick={() => setActiveDate(day.date)}
+                    className={`group cursor-pointer border-b border-slate-100 transition-all duration-200 ${dateRowRingClass(isActive)}`}
+                  >
+                    <td className={`sticky left-0 border-l-2 px-3 py-1.5 font-medium text-slate-700 transition-all duration-200 ${activeRowCellClass}`}>
+                      {day.day}{" "}
+                      <span className="text-slate-400">{day.weekday}</span>
+                    </td>
+                    {members.flatMap((m, i) => {
+                      const c = getMemberColor(m.name, i);
+                      const meal = day.meals[m.id] ?? {
+                        breakfast: 0,
+                        lunch: 0,
+                        dinner: 0,
+                      };
+                      const cellClass = `px-1 py-1.5 text-center font-medium transition-all duration-200 ${activeRowCellClass} ${isActive ? "" : c.cell} ${c.cellText}`;
+                      const savingKey = `${day.date}-${m.id}`;
+                      const isSaving = saving === savingKey;
 
-                    return (["breakfast", "lunch", "dinner"] as const).map(
-                      (field) => (
-                        <td
-                          key={`${day.date}-${m.id}-${field}`}
-                          className={`${cellClass} ${isSaving ? "opacity-60" : ""}`}
-                        >
-                          {isAdmin ? (
-                            <select
-                              value={meal[field]}
-                              onFocus={() => setActiveDate(day.date)}
-                              onChange={(e) =>
-                                updateMeal(
-                                  day.date,
-                                  m.id,
-                                  field,
-                                  Number(e.target.value),
-                                  meal
-                                )
-                              }
-                              className="w-12 rounded border border-slate-200/80 bg-white/90 px-0.5 py-0.5 text-center text-xs focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                      return (["breakfast", "lunch", "dinner"] as const).map(
+                        (field) => {
+                          const isLastCell =
+                            i === members.length - 1 && field === "dinner";
+
+                          return (
+                            <td
+                              key={`${day.date}-${m.id}-${field}`}
+                              className={`${cellClass} ${isLastCell ? "border-r-2" : ""} ${isSaving ? "opacity-60" : ""}`}
                             >
-                              {getMealSelectOptions(meal[field]).map((v) => (
-                                <option key={v} value={v}>
-                                  {formatMeal(v)}
-                                </option>
-                              ))}
-                            </select>
-                          ) : (
-                            formatMeal(meal[field])
-                          )}
-                        </td>
-                      )
-                    );
-                  })}
-                </tr>
+                              {isAdmin ? (
+                                <select
+                                  value={meal[field]}
+                                  onFocus={() => setActiveDate(day.date)}
+                                  onChange={(e) =>
+                                    updateMeal(
+                                      day.date,
+                                      m.id,
+                                      field,
+                                      Number(e.target.value),
+                                      meal
+                                    )
+                                  }
+                                  className="w-12 rounded border border-slate-200/80 bg-white/90 px-0.5 py-0.5 text-center text-xs focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                                >
+                                  {getMealSelectOptions(meal[field]).map((v) => (
+                                    <option key={v} value={v}>
+                                      {formatMeal(v)}
+                                    </option>
+                                  ))}
+                                </select>
+                              ) : (
+                                formatMeal(meal[field])
+                              )}
+                            </td>
+                          );
+                        }
+                      );
+                    })}
+                  </tr>
                 );
               })}
               <tr className="font-bold">
