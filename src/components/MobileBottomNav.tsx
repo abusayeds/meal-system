@@ -47,6 +47,7 @@ export default function MobileBottomNav({
       <div className="flex items-stretch px-1 pt-1">
         {items.map((item) => {
           const active = pathname === item.href;
+          const isAllMeals = item.href === "/dashboard/all-meals";
           const Icon = item.icon;
           return (
             <Link
@@ -60,8 +61,14 @@ export default function MobileBottomNav({
                 <span className="absolute top-0 h-0.5 w-8 rounded-full bg-emerald-500 transition-all duration-300" />
               )}
               <span
-                className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-200 ${
-                  active ? "scale-105 bg-emerald-50" : ""
+                className={`flex h-8 w-8 items-center justify-center rounded-xl border transition-all duration-200 ${
+                  isAllMeals
+                    ? active
+                      ? "scale-105 border-emerald-500 bg-emerald-50"
+                      : "border-transparent hover:border-emerald-500 hover:bg-emerald-50"
+                    : active
+                      ? "scale-105 border-transparent bg-emerald-50"
+                      : "border-transparent"
                 }`}
               >
                 <Icon className="h-[18px] w-[18px]" strokeWidth={active ? 2.5 : 2} />

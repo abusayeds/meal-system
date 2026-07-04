@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import {
   LayoutDashboard,
@@ -15,7 +16,6 @@ import {
   CalendarDays,
   LogOut,
   X,
-  ChefHat,
   KeyRound,
   Bell,
 } from "lucide-react";
@@ -120,17 +120,27 @@ export default function Sidebar({
     accent?: "emerald" | "violet";
   }) {
     const active = pathname === href;
+    const isAllMeals = href === "/dashboard/all-meals";
     const activeClass =
       accent === "violet"
         ? "bg-violet-600 text-white shadow-md shadow-violet-200"
         : "bg-emerald-600 text-white shadow-md shadow-emerald-200";
+    const allMealsBorderClass = isAllMeals
+      ? active
+        ? "border-emerald-500"
+        : "border-transparent hover:border-emerald-500 hover:bg-emerald-50"
+      : "border-transparent";
 
     return (
       <Link
         href={href}
         onClick={onNavigate}
-        className={`flex min-h-[46px] items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all active:scale-[0.98] ${
-          active ? activeClass : "text-slate-600 hover:bg-slate-100"
+        className={`flex min-h-[46px] items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all active:scale-[0.98] ${allMealsBorderClass} ${
+          active
+            ? activeClass
+            : isAllMeals
+              ? "text-slate-600"
+              : "text-slate-600 hover:bg-slate-100"
         }`}
       >
         <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={active ? 2.5 : 2} />
@@ -173,12 +183,27 @@ export default function Sidebar({
       <div className={`shrink-0 border-b border-slate-200 ${isSheet ? "px-4 pb-4 pt-1" : "p-5"}`}>
         <div className="flex items-center justify-between gap-2">
           {isSheet ? (
-            <h2 className="text-base font-bold text-slate-900">{APP_NAME}</h2>
+            <div className="flex min-w-0 items-center gap-2">
+              <Image
+                src="/icons/icon-192.png"
+                alt={`${APP_NAME} logo`}
+                width={36}
+                height={36}
+                className="h-9 w-9 shrink-0 rounded-xl object-cover"
+                priority
+              />
+              <h2 className="truncate text-base font-bold text-slate-900">{APP_NAME}</h2>
+            </div>
           ) : (
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-sm">
-                <ChefHat className="h-5 w-5" strokeWidth={2.25} />
-              </div>
+              <Image
+                src="/icons/icon-192.png"
+                alt={`${APP_NAME} logo`}
+                width={40}
+                height={40}
+                className="h-10 w-10 shrink-0 rounded-xl object-cover shadow-sm"
+                priority
+              />
               <div className="min-w-0">
                 <h1 className="text-sm font-bold text-slate-900">{APP_NAME}</h1>
                 <p className="truncate text-xs text-slate-500">{user.email}</p>
