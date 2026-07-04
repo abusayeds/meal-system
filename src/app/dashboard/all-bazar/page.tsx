@@ -18,6 +18,7 @@ import BazarDescriptionInput from "@/components/ui/BazarDescriptionInput";
 import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
 import { useMonth } from "@/components/MonthProvider";
 import { formatCurrency } from "@/lib/format";
+import { dateCardRingClass, dateRowRingClass, isDateActive } from "@/lib/date-highlight";
 import { getMemberColor } from "@/lib/member-colors";
 
 interface Member {
@@ -56,7 +57,7 @@ function BazarEntryRow({
   const c = getMemberColor(entry.userName, memberIdx >= 0 ? memberIdx : 0);
 
   return (
-    <div className="rounded-2xl bg-slate-50/90 p-3.5 ring-1 ring-slate-100">
+    <div className={`rounded-2xl p-3.5 ring-1 ${c.cell} ${c.cellText} ring-black/5`}>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -116,6 +117,7 @@ export default function AllBazarPage() {
   } | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [activeDate, setActiveDate] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -147,6 +149,7 @@ export default function AllBazarPage() {
     setFormAmount("");
     setFormDescription("");
     setEditingId(null);
+    setActiveDate(null);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -184,6 +187,7 @@ export default function AllBazarPage() {
     setEditingId(entry.id);
     setFormUserId(entry.userId);
     setFormDate(date);
+    setActiveDate(date);
     setFormAmount(String(entry.amount));
     setFormDescription(entry.description);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -310,9 +314,13 @@ export default function AllBazarPage() {
                 <input
                   type="date"
                   value={formDate}
-                  onChange={(e) => setFormDate(e.target.value)}
+                  onChange={(e) => {
+                    setFormDate(e.target.value);
+                    setActiveDate(e.target.value || null);
+                  }}
+                  onFocus={() => formDate && setActiveDate(formDate)}
                   required
-                  className="input-field"
+                  className="input-field focus:border-emerald-500 focus:ring-2 focus:ring-emerald-400"
                 />
               </div>
               <div>
@@ -434,10 +442,13 @@ export default function AllBazarPage() {
               byUser[b.userId] = (byUser[b.userId] ?? 0) + b.amount;
             }
 
+            const isDayActive = isDateActive(day.date, activeDate);
+
             return (
               <div
                 key={day.date}
-                className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200"
+                onClick={() => setActiveDate(day.date)}
+                className={`cursor-pointer rounded-2xl bg-white p-4 shadow-sm transition-all duration-200 ${dateCardRingClass(isDayActive)}`}
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -548,8 +559,14 @@ export default function AllBazarPage() {
                     byUser[b.userId] = (byUser[b.userId] ?? 0) + b.amount;
                   }
 
+                  const isDayActive = isDateActive(day.date, activeDate);
+
                   return (
-                    <tr key={day.date} className="border-b border-slate-100 hover:bg-slate-50/50">
+                    <tr
+                      key={day.date}
+                      onClick={() => setActiveDate(day.date)}
+                      className={`cursor-pointer border-b border-slate-100 transition-all duration-200 ${dateRowRingClass(isDayActive)}`}
+                    >
                       <td className="bg-white px-4 py-3 font-medium text-slate-700">
                         <p>{day.day} {day.weekday}</p>
                         <p className="text-xs text-slate-400">{day.date}</p>
@@ -579,7 +596,7 @@ export default function AllBazarPage() {
                             return (
                               <div
                                 key={entry.id}
-                                className="flex flex-wrap items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 ring-1 ring-slate-100"
+                                className={`flex flex-wrap items-center gap-2 rounded-xl px-3 py-2 ring-1 ring-black/5 ${c.cell} ${c.cellText}`}
                               >
                                 <span
                                   className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${c.badge}`}

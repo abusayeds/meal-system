@@ -5,6 +5,7 @@ import { Search, X } from "lucide-react";
 import PageContainer, { PageHeader } from "@/components/PageContainer";
 import { useMonth } from "@/components/MonthProvider";
 import { getMealSelectOptions, formatMeal } from "@/lib/format";
+import { dateCardRingClass, dateRowRingClass, isDateActive } from "@/lib/date-highlight";
 import { getTodayDateKey } from "@/lib/utils";
 
 interface DayRow {
@@ -25,6 +26,7 @@ export default function MyMealsPage() {
   const [saving, setSaving] = useState<string | null>(null);
   const [daySearch, setDaySearch] = useState("");
   const [highlightDate, setHighlightDate] = useState<string | null>(null);
+  const [activeDate, setActiveDate] = useState<string | null>(null);
   const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const monthLocked = selectedMonth?.editLocked ?? false;
@@ -246,18 +248,14 @@ export default function MyMealsPage() {
           const isSaving = saving === day.date;
 
           const isHighlighted = highlightDate === day.date;
+          const isActive = isDateActive(day.date, activeDate);
 
           return (
             <div
               key={day.date}
               id={`meal-day-mobile-${day.date}`}
-              className={`scroll-mt-24 rounded-2xl bg-white p-4 shadow-sm ring-1 transition-all duration-300 ${
-                isHighlighted
-                  ? "ring-2 ring-emerald-500 shadow-md shadow-emerald-100"
-                  : isToday
-                    ? "ring-emerald-300"
-                    : "ring-slate-200"
-              } ${isSaving ? "opacity-70" : ""}`}
+              onClick={() => setActiveDate(day.date)}
+              className={`scroll-mt-24 rounded-2xl bg-white p-4 shadow-sm transition-all duration-200 ${dateCardRingClass(isHighlighted || isActive)} ${isSaving ? "opacity-70" : ""}`}
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -283,6 +281,7 @@ export default function MyMealsPage() {
                     {canEditMeals ? (
                       <select
                         value={meal[field]}
+                        onFocus={() => setActiveDate(day.date)}
                         onChange={(e) =>
                           updateMeal(
                             day.date,
@@ -291,7 +290,7 @@ export default function MyMealsPage() {
                             meal
                           )
                         }
-                        className="w-full min-h-[44px] rounded-xl border border-slate-200 bg-slate-50 text-center text-sm font-medium focus:border-emerald-500 focus:outline-none"
+                        className="w-full min-h-[44px] rounded-xl border border-slate-200 bg-slate-50 text-center text-sm font-medium focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                       >
                         {getMealSelectOptions(meal[field]).map((v) => (
                           <option key={v} value={v}>
@@ -338,19 +337,15 @@ export default function MyMealsPage() {
                 const isToday = day.date === todayKey;
 
                 const isHighlighted = highlightDate === day.date;
+                const isActive = isDateActive(day.date, activeDate);
 
                 return (
                   <tr
                     key={day.date}
                     id={`meal-day-desktop-${day.date}`}
-                    className={`scroll-mt-24 transition-colors duration-300 ${
-                      isHighlighted
-                        ? "bg-emerald-100 ring-2 ring-inset ring-emerald-400"
-                        : isSaving
-                          ? "bg-emerald-50"
-                          : isToday
-                            ? "bg-emerald-50/50"
-                            : "hover:bg-slate-50"
+                    onClick={() => setActiveDate(day.date)}
+                    className={`scroll-mt-24 cursor-pointer transition-all duration-200 ${dateRowRingClass(isHighlighted || isActive)} ${
+                      isSaving ? "opacity-70" : isToday && !isHighlighted && !isActive ? "bg-emerald-50/50" : ""
                     }`}
                   >
                     <td className="px-4 py-2 font-medium text-slate-700">
@@ -362,6 +357,7 @@ export default function MyMealsPage() {
                         {canEditMeals ? (
                           <select
                             value={meal[field]}
+                            onFocus={() => setActiveDate(day.date)}
                             onChange={(e) =>
                               updateMeal(
                                 day.date,
@@ -370,7 +366,7 @@ export default function MyMealsPage() {
                                 meal
                               )
                             }
-                            className="w-16 rounded-lg border border-slate-200 px-1 py-1.5 text-center text-sm focus:border-emerald-500 focus:outline-none"
+                            className="w-16 rounded-lg border border-slate-200 px-1 py-1.5 text-center text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                           >
                             {getMealSelectOptions(meal[field]).map((v) => (
                               <option key={v} value={v}>

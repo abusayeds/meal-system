@@ -8,6 +8,7 @@ import BazarDescriptionInput from "@/components/ui/BazarDescriptionInput";
 import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
 import { useMonth } from "@/components/MonthProvider";
 import { formatCurrency } from "@/lib/format";
+import { dateCardRingClass, dateRowRingClass, isDateActive } from "@/lib/date-highlight";
 import { getTodayDateKey } from "@/lib/utils";
 
 interface Bazar {
@@ -30,6 +31,7 @@ export default function MyBazarPage() {
   const [deleteTarget, setDeleteTarget] = useState<Bazar | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [activeDate, setActiveDate] = useState<string | null>(null);
 
   const monthLocked = selectedMonth?.editLocked ?? false;
   const canEditBazar = userCanEdit && !monthLocked;
@@ -57,11 +59,13 @@ export default function MyBazarPage() {
     setAmount("");
     setDescription("");
     setEditingId(null);
+    setActiveDate(null);
   }
 
   function startEdit(entry: Bazar) {
     setEditingId(entry.id);
     setDate(entry.date);
+    setActiveDate(entry.date);
     setAmount(String(entry.amount));
     setDescription(entry.description);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -202,9 +206,13 @@ export default function MyBazarPage() {
                   <input
                     type="date"
                     value={date}
-                    onChange={(e) => setDate(e.target.value)}
+                    onChange={(e) => {
+                      setDate(e.target.value);
+                      setActiveDate(e.target.value || null);
+                    }}
+                    onFocus={() => date && setActiveDate(date)}
                     required
-                    className="input-field"
+                    className="input-field focus:border-emerald-500 focus:ring-2 focus:ring-emerald-400"
                   />
                 </div>
                 <div>
@@ -276,16 +284,15 @@ export default function MyBazarPage() {
             {bazars.length === 0 ? (
               <p className="py-6 text-center text-slate-400">No bazar entries yet</p>
             ) : (
-              bazars.map((b) => (
+              bazars.map((b) => {
+                const isActive =
+                  isDateActive(b.date, activeDate) || editingId === b.id;
+
+                return (
                 <div
                   key={b.id}
-                  className={`rounded-2xl p-4 ring-1 transition-all ${
-                    editingId === b.id
-                      ? "bg-emerald-50 ring-emerald-300"
-                      : b.date === todayKey
-                        ? "bg-emerald-50/50 ring-emerald-200"
-                        : "bg-slate-50 ring-slate-200"
-                  }`}
+                  onClick={() => setActiveDate(b.date)}
+                  className={`cursor-pointer rounded-2xl bg-white p-4 transition-all duration-200 ${dateCardRingClass(isActive)}`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -322,7 +329,8 @@ export default function MyBazarPage() {
                     </div>
                   )}
                 </div>
-              ))
+                );
+              })
             )}
           </div>
 
@@ -347,16 +355,15 @@ export default function MyBazarPage() {
                     </td>
                   </tr>
                 ) : (
-                  bazars.map((b) => (
+                  bazars.map((b) => {
+                    const isActive =
+                      isDateActive(b.date, activeDate) || editingId === b.id;
+
+                    return (
                     <tr
                       key={b.id}
-                      className={`hover:bg-slate-50 ${
-                        editingId === b.id
-                          ? "bg-emerald-50"
-                          : b.date === todayKey
-                            ? "bg-emerald-50/50"
-                            : ""
-                      }`}
+                      onClick={() => setActiveDate(b.date)}
+                      className={`cursor-pointer transition-all duration-200 ${dateRowRingClass(isActive)}`}
                     >
                       <td className="px-6 py-3">{b.date}</td>
                       <td className="px-4 py-3 font-medium">
@@ -384,7 +391,8 @@ export default function MyBazarPage() {
                         </td>
                       )}
                     </tr>
-                  ))
+                    );
+                  })
                 )}
               </tbody>
             </table>

@@ -5,6 +5,7 @@ import { UtensilsCrossed } from "lucide-react";
 import PageContainer, { PageHeader, MobileScrollTable } from "@/components/PageContainer";
 import { useMonth } from "@/components/MonthProvider";
 import { getMealSelectOptions, formatMeal } from "@/lib/format";
+import { dateCardRingClass, dateRowRingClass, isDateActive } from "@/lib/date-highlight";
 import { getMemberColor } from "@/lib/member-colors";
 
 interface Member {
@@ -26,6 +27,7 @@ export default function AllMealsPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("");
   const [mobileMemberId, setMobileMemberId] = useState("");
+  const [activeDate, setActiveDate] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
 
   useEffect(() => {
@@ -189,10 +191,13 @@ export default function AllMealsPage() {
           const savingKey = `${day.date}-${mobileMemberId}`;
           const isSaving = saving === savingKey;
 
+          const isActive = isDateActive(day.date, activeDate);
+
           return (
             <div
               key={day.date}
-              className={`rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200 ${isSaving ? "opacity-60" : ""}`}
+              onClick={() => setActiveDate(day.date)}
+              className={`rounded-2xl bg-white p-4 shadow-sm transition-all duration-200 ${dateCardRingClass(isActive)} ${isSaving ? "opacity-60" : ""}`}
             >
               <div className="flex items-center justify-between">
                 <p className="font-bold text-slate-900">
@@ -216,6 +221,7 @@ export default function AllMealsPage() {
                     {isAdmin ? (
                       <select
                         value={meal[field]}
+                        onFocus={() => setActiveDate(day.date)}
                         onChange={(e) =>
                           updateMeal(
                             day.date,
@@ -225,7 +231,7 @@ export default function AllMealsPage() {
                             meal
                           )
                         }
-                        className="w-full min-h-[44px] rounded-lg border border-slate-200/80 bg-slate-50 text-center text-sm font-medium focus:border-violet-500 focus:outline-none"
+                        className="w-full min-h-[44px] rounded-lg border border-slate-200/80 bg-slate-50 text-center text-sm font-medium focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                       >
                         {getMealSelectOptions(meal[field]).map((v) => (
                           <option key={v} value={v}>
@@ -296,8 +302,15 @@ export default function AllMealsPage() {
               </tr>
             </thead>
             <tbody>
-              {calendar.map((day) => (
-                <tr key={day.date} className="border-b border-slate-100">
+              {calendar.map((day) => {
+                const isActive = isDateActive(day.date, activeDate);
+
+                return (
+                <tr
+                  key={day.date}
+                  onClick={() => setActiveDate(day.date)}
+                  className={`cursor-pointer border-b border-slate-100 transition-all duration-200 ${dateRowRingClass(isActive)}`}
+                >
                   <td className="sticky left-0 bg-white px-3 py-1.5 font-medium text-slate-700">
                     {day.day}{" "}
                     <span className="text-slate-400">{day.weekday}</span>
@@ -322,6 +335,7 @@ export default function AllMealsPage() {
                           {isAdmin ? (
                             <select
                               value={meal[field]}
+                              onFocus={() => setActiveDate(day.date)}
                               onChange={(e) =>
                                 updateMeal(
                                   day.date,
@@ -331,7 +345,7 @@ export default function AllMealsPage() {
                                   meal
                                 )
                               }
-                              className="w-12 rounded border border-slate-200/80 bg-white/90 px-0.5 py-0.5 text-center text-xs focus:border-violet-500 focus:outline-none"
+                              className="w-12 rounded border border-slate-200/80 bg-white/90 px-0.5 py-0.5 text-center text-xs focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                             >
                               {getMealSelectOptions(meal[field]).map((v) => (
                                 <option key={v} value={v}>
@@ -347,7 +361,8 @@ export default function AllMealsPage() {
                     );
                   })}
                 </tr>
-              ))}
+                );
+              })}
               <tr className="font-bold">
                 <td className="sticky left-0 bg-slate-800 px-3 py-2 text-white">
                   TOTAL
