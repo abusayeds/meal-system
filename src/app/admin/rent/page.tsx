@@ -188,7 +188,7 @@ export default function AdminRentPage() {
                         updateOtherField(i, "amount", e.target.value)
                       }
                       placeholder="0"
-                      className="min-h-[44px] w-full rounded-lg border border-slate-200 px-3 py-2 text-sm sm:w-32"
+                      className="min-h-11 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm sm:w-32"
                     />
                     <button
                       type="button"
