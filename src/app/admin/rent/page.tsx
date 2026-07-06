@@ -23,7 +23,7 @@ export default function AdminRentPage() {
       .then((r) => r.json())
       .then((d) => {
         const { fixedFields: fixed, otherFields: others } = splitRentFields(
-          d.fields ?? []
+          d.fields ?? [],
         );
         setFixedFields(fixed);
         setOtherFields(others);
@@ -48,7 +48,7 @@ export default function AdminRentPage() {
   function updateOtherField(
     index: number,
     key: keyof RentField,
-    value: string
+    value: string,
   ) {
     const updated = [...otherFields];
     if (key === "amount") {
@@ -75,7 +75,7 @@ export default function AdminRentPage() {
     if (res.ok) {
       const d = await res.json();
       const { fixedFields: fixed, otherFields: others } = splitRentFields(
-        d.fields ?? []
+        d.fields ?? [],
       );
       setFixedFields(fixed);
       setOtherFields(others);
@@ -129,7 +129,7 @@ export default function AdminRentPage() {
                   value={field.amount === 0 ? "" : String(field.amount)}
                   onChange={(e) => updateFixedField(i, e.target.value)}
                   placeholder="0"
-                  className="min-h-[44px] w-32 rounded-lg border border-slate-200 bg-white px-3 py-2 text-right text-sm"
+                  className="min-h-11 w-32 rounded-lg border border-slate-200 bg-white px-3 py-2 text-right text-sm"
                 />
               </div>
             ))}
@@ -228,9 +228,7 @@ export default function AdminRentPage() {
           </button>
         </div>
 
-        {message && (
-          <p className="mt-2 text-sm text-emerald-600">{message}</p>
-        )}
+        {message && <p className="mt-2 text-sm text-emerald-600">{message}</p>}
       </div>
     </PageContainer>
   );
