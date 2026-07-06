@@ -177,7 +177,7 @@ export default function AdminRentPage() {
                       updateOtherField(i, "name", e.target.value)
                     }
                     placeholder="Field name (e.g. Internet)"
-                    className="min-h-[44px] flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                    className="min-h-11 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
                   />
                   <div className="flex gap-2">
                     <input
