@@ -193,7 +193,7 @@ export default function AdminRentPage() {
                     <button
                       type="button"
                       onClick={() => removeOtherField(i)}
-                      className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600"
+                      className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600"
                       aria-label="Remove field"
                     >
                       ✕
@@ -222,7 +222,7 @@ export default function AdminRentPage() {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="min-h-[44px] rounded-lg bg-violet-600 px-6 py-2 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-60"
+            className="min-h-11 rounded-lg bg-violet-600 px-6 py-2 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-60"
           >
             {saving ? "Saving..." : "Save"}
           </button>
