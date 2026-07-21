@@ -90,6 +90,14 @@ export default function AdminUsersPage() {
   }
 
   async function toggleActive(user: User) {
+    const removing = user.isActive;
+    const confirmed = window.confirm(
+      removing
+        ? `${user.name} কে mess থেকে remove করবেন?\n\nতার login বন্ধ হয়ে যাবে, কিন্তু যে মাসগুলোতে সে ছিল — সেই মাসের meal/bazar/settlement হিসাব আগের মতোই থাকবে।`
+        : `${user.name} কে আবার mess-এ ফিরিয়ে আনবেন?`
+    );
+    if (!confirmed) return;
+
     await fetch(`/api/users/${user.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -153,7 +161,7 @@ export default function AdminUsersPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <PageHeader
           title="Manage Users"
-          subtitle="Create and manage member accounts"
+          subtitle="Create members or remove someone who left the mess"
         />
         <button
           onClick={() => setShowForm(!showForm)}
@@ -168,6 +176,14 @@ export default function AdminUsersPage() {
           {error}
         </p>
       )}
+
+      <div className="mt-6 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">
+        <p className="font-semibold">Mess ছাড়লে কী হবে?</p>
+        <p className="mt-1 text-amber-800">
+          Remove করলে member আর login/edit করতে পারবে না। কিন্তু যে মাসগুলোতে
+          সে meal বা bazar দিয়েছিল — সেই মাসের হিসাব পরিবর্তন হবে না।
+        </p>
+      </div>
 
       <div className="mt-6 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -205,7 +221,7 @@ export default function AdminUsersPage() {
                     : "bg-red-100 text-red-600"
                 }`}
               >
-                {u.isActive ? "Active" : "Inactive"}
+                {u.isActive ? "Active" : "Left mess"}
               </span>
             </div>
 
@@ -251,7 +267,7 @@ export default function AdminUsersPage() {
               onClick={() => toggleActive(u)}
               className="mt-3 min-h-[40px] w-full rounded-lg border border-slate-200 py-2 text-sm font-medium text-slate-600"
             >
-              {u.isActive ? "Deactivate Account" : "Activate Account"}
+              {u.isActive ? "Remove from Mess" : "Bring Back to Mess"}
             </button>
           </div>
         ))}
@@ -291,7 +307,7 @@ export default function AdminUsersPage() {
                   {u.isActive ? (
                     <span className="text-emerald-600">Active</span>
                   ) : (
-                    <span className="text-red-500">Inactive</span>
+                    <span className="text-red-500">Left mess</span>
                   )}
                 </td>
                 <td className="px-4 py-3">
@@ -323,7 +339,7 @@ export default function AdminUsersPage() {
                     onClick={() => toggleActive(u)}
                     className="text-xs text-slate-500 hover:text-slate-700"
                   >
-                    {u.isActive ? "Deactivate" : "Activate"}
+                    {u.isActive ? "Remove" : "Bring Back"}
                   </button>
                 </td>
               </tr>
