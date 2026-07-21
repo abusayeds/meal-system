@@ -37,16 +37,13 @@ export async function getMonthData(monthId: string) {
     editLockSource: monthDoc.editLockSource,
   });
 
-  const members = await User.find({ isActive: true, role: "member" })
-    .select("_id name email role")
-    .sort({ name: 1 })
-    .lean();
-
   const meals = await MealEntry.find({ monthId }).lean();
   const bazars = await BazarEntry.find({ monthId })
     .populate("userId", "name")
     .sort({ date: 1 })
     .lean();
+
+  const members = await getMembersForMonth(meals, bazars);
 
   const rentConfig = await RentConfig.findOne({ monthId }).lean();
 
@@ -100,7 +97,7 @@ export async function getMonthData(monthId: string) {
     rentConfig?.fields?.reduce((sum, f) => sum + f.amount, 0) ?? 0;
 
   const summary = calculateMonthSummary({
-    members: members.map((u) => ({ id: u._id.toString(), name: u.name })),
+    members: members.map((u) => ({ id: u.id, name: u.name })),
     mealsByUser,
     depositsByUser,
     totalBazar,
@@ -134,10 +131,11 @@ export async function getMonthData(monthId: string) {
       editLockSource: monthLocked.editLockSource ?? "none",
     },
     members: members.map((u) => ({
-      id: u._id.toString(),
+      id: u.id,
       name: u.name,
       email: u.email,
       role: u.role,
+      isActive: u.isActive,
     })),
     rentFields: rentConfig?.fields ?? [],
     totalRent,
@@ -156,4 +154,53 @@ export async function getMonthData(monthId: string) {
     }),
     summary,
   };
+}
+
+interface MonthMember {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  isActive: boolean;
+}
+
+/** Active members + former members who have meal/bazar data in this month. */
+async function getMembersForMonth(
+  meals: { userId: { toString(): string } }[],
+  bazars: { userId: unknown }[]
+): Promise<MonthMember[]> {
+  const activeMembers = await User.find({ isActive: true, role: "member" })
+    .select("_id name email role isActive")
+    .lean();
+
+  const participantIds = new Set<string>();
+  for (const entry of meals) {
+    participantIds.add(entry.userId.toString());
+  }
+  for (const entry of bazars) {
+    participantIds.add(getPopulatedUser(entry.userId).id);
+  }
+
+  const activeIds = new Set(activeMembers.map((m) => m._id.toString()));
+  const formerIds = [...participantIds].filter((id) => !activeIds.has(id));
+
+  const formerMembers =
+    formerIds.length > 0
+      ? await User.find({ _id: { $in: formerIds }, role: "member" })
+          .select("_id name email role isActive")
+          .lean()
+      : [];
+
+  const byId = new Map<string, MonthMember>();
+  for (const m of [...activeMembers, ...formerMembers]) {
+    byId.set(m._id.toString(), {
+      id: m._id.toString(),
+      name: m.name,
+      email: m.email,
+      role: m.role,
+      isActive: m.isActive,
+    });
+  }
+
+  return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
 }

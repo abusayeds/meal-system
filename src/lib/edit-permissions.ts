@@ -17,10 +17,11 @@ export async function memberCanEdit(userId: string): Promise<boolean> {
   await connectDB();
 
   const user = await User.findById(userId)
-    .select("role canEditMealsBazar")
+    .select("role canEditMealsBazar isActive")
     .lean();
 
   if (!user || user.role === "admin") return true;
+  if (!user.isActive) return false;
 
   const settings = await getAppSettings();
   if (settings.lockAllMemberEdits) return false;

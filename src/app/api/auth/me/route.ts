@@ -1,9 +1,9 @@
-import { getSession } from "@/lib/auth";
+import { getActiveSession } from "@/lib/auth";
 import { memberCanEdit } from "@/lib/edit-permissions";
 import { jsonError, jsonSuccess } from "@/lib/utils";
 
 export async function GET() {
-  const session = await getSession();
+  const session = await getActiveSession();
   if (!session) {
     return jsonError("Unauthorized", 401);
   }

@@ -75,8 +75,27 @@ export async function getSession(): Promise<SessionUser | null> {
   return verifyToken(token);
 }
 
-export async function requireSession(): Promise<SessionUser> {
+export async function getActiveSession(): Promise<SessionUser | null> {
   const session = await getSession();
+  if (!session) return null;
+
+  await connectDB();
+  const user = await User.findById(session.id)
+    .select("isActive name email role")
+    .lean();
+
+  if (!user || !user.isActive) return null;
+
+  return {
+    id: session.id,
+    name: user.name,
+    email: user.email,
+    role: user.role as "admin" | "member",
+  };
+}
+
+export async function requireSession(): Promise<SessionUser> {
+  const session = await getActiveSession();
   if (!session) {
     throw new Error("Unauthorized");
   }
