@@ -23,7 +23,7 @@ export default function AdminRentPage() {
       .then((r) => r.json())
       .then((d) => {
         const { fixedFields: fixed, otherFields: others } = splitRentFields(
-          d.fields ?? []
+          d.fields ?? [],
         );
         setFixedFields(fixed);
         setOtherFields(others);
@@ -48,7 +48,7 @@ export default function AdminRentPage() {
   function updateOtherField(
     index: number,
     key: keyof RentField,
-    value: string
+    value: string,
   ) {
     const updated = [...otherFields];
     if (key === "amount") {
@@ -75,7 +75,7 @@ export default function AdminRentPage() {
     if (res.ok) {
       const d = await res.json();
       const { fixedFields: fixed, otherFields: others } = splitRentFields(
-        d.fields ?? []
+        d.fields ?? [],
       );
       setFixedFields(fixed);
       setOtherFields(others);
@@ -129,7 +129,7 @@ export default function AdminRentPage() {
                   value={field.amount === 0 ? "" : String(field.amount)}
                   onChange={(e) => updateFixedField(i, e.target.value)}
                   placeholder="0"
-                  className="min-h-[44px] w-32 rounded-lg border border-slate-200 bg-white px-3 py-2 text-right text-sm"
+                  className="min-h-11 w-32 rounded-lg border border-slate-200 bg-white px-3 py-2 text-right text-sm"
                 />
               </div>
             ))}
@@ -177,7 +177,7 @@ export default function AdminRentPage() {
                       updateOtherField(i, "name", e.target.value)
                     }
                     placeholder="Field name (e.g. Internet)"
-                    className="min-h-[44px] flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                    className="min-h-11 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
                   />
                   <div className="flex gap-2">
                     <input
@@ -188,12 +188,12 @@ export default function AdminRentPage() {
                         updateOtherField(i, "amount", e.target.value)
                       }
                       placeholder="0"
-                      className="min-h-[44px] w-full rounded-lg border border-slate-200 px-3 py-2 text-sm sm:w-32"
+                      className="min-h-11 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm sm:w-32"
                     />
                     <button
                       type="button"
                       onClick={() => removeOtherField(i)}
-                      className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600"
+                      className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600"
                       aria-label="Remove field"
                     >
                       ✕
@@ -222,15 +222,13 @@ export default function AdminRentPage() {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="min-h-[44px] rounded-lg bg-violet-600 px-6 py-2 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-60"
+            className="min-h-11 rounded-lg bg-violet-600 px-6 py-2 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-60"
           >
             {saving ? "Saving..." : "Save"}
           </button>
         </div>
 
-        {message && (
-          <p className="mt-2 text-sm text-emerald-600">{message}</p>
-        )}
+        {message && <p className="mt-2 text-sm text-emerald-600">{message}</p>}
       </div>
     </PageContainer>
   );
